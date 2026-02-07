@@ -56,6 +56,8 @@ cd legacy_sources
 - These files are preserved for traceability and portfolio history.
 - Main active implementations remain at repo root (`UnifiedApp.py`, `ModernUnifiedApp.py`, `app.py`).
 - `aca-unified-assistant.py` may require additional local files (`aca-copilot` folder) to use all features.
+- Deep technical validation details are in `legacy_sources/DEEP_AUDIT_REPORT.md`.
+- Automated deep checks can be run with `python legacy_sources/deep_audit_checks.py`.
 
 ## Fixes Applied During Import
 

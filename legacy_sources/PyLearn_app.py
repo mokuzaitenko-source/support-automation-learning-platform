@@ -607,6 +607,9 @@ def lesson(path_id, lesson_id):
         return render_template('lesson_view.html', lesson=lesson_data, path=path, path_id=path_id)
     return "Lesson not found", 404
 
+# Compatibility alias so shared templates can call endpoint name "lesson_view"
+app.add_url_rule('/lesson/<path_id>/<lesson_id>', endpoint='lesson_view', view_func=lesson)
+
 @app.route('/execute', methods=['POST'])
 def execute_code():
     """Execute Python code safely and return output"""
