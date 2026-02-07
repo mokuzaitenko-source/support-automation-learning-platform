@@ -1,5 +1,9 @@
-# Import everything from UnifiedApp
-from UnifiedApp import *
+# Import everything from legacy base app
+try:
+    from UnifiedApp_desktop import *
+except ImportError:
+    # Fallback when this file is copied back next to UnifiedApp.py
+    from UnifiedApp import *
 
 class ModernUnifiedAppGUI(UnifiedAppGUI):
     """Modern, smooth UI version of UnifiedApp"""

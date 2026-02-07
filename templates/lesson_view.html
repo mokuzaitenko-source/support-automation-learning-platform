@@ -100,11 +100,11 @@
         {% set current_index = path.lessons.index(lesson) %}
         {% if current_index > 0 %}
             {% set prev_lesson = path.lessons[current_index - 1] %}
-            <a href="{{ url_for('lesson_view', path_id=path.id, lesson_id=prev_lesson.id) }}" class="btn-nav">← Previous</a>
+            <a href="{{ url_for('lesson', path_id=path.id, lesson_id=prev_lesson.id) }}" class="btn-nav">← Previous</a>
         {% endif %}
         {% if current_index < path.lessons|length - 1 %}
             {% set next_lesson = path.lessons[current_index + 1] %}
-            <a href="{{ url_for('lesson_view', path_id=path.id, lesson_id=next_lesson.id) }}" class="btn-nav" id="next-lesson-btn">Next →</a>
+            <a href="{{ url_for('lesson', path_id=path.id, lesson_id=next_lesson.id) }}" class="btn-nav" id="next-lesson-btn">Next →</a>
         {% else %}
             <a href="{{ url_for('learning_path', path_id=path.id) }}" class="btn-nav">🎉 Finish Path</a>
         {% endif %}

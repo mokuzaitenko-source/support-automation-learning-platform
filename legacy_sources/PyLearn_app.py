@@ -577,13 +577,23 @@ print(f"Status: {student.get_status()}")
 
 @app.route('/')
 def index():
-    return render_template('unified_index.html', learning_paths=LEARNING_PATHS)
+    # Legacy template expects path.progress metadata on each learning path.
+    enriched_paths = {}
+    for path_id, path in LEARNING_PATHS.items():
+        total = len(path.get("lessons", []))
+        progress = {"completed": 0, "total": total, "percentage": 0}
+        enriched = dict(path)
+        enriched["progress"] = progress
+        enriched_paths[path_id] = enriched
+    return render_template('unified_index.html', learning_paths=enriched_paths)
 
 @app.route('/path/<path_id>')
 def learning_path(path_id):
     path = LEARNING_PATHS.get(path_id)
     if path:
-        return render_template('learning_path.html', path=path, path_id=path_id)
+        total = len(path.get("lessons", []))
+        progress = {"completed": 0, "total": total, "percentage": 0}
+        return render_template('learning_path.html', path=path, path_id=path_id, progress=progress)
     return "Path not found", 404
 
 @app.route('/lesson/<path_id>/<lesson_id>')
