@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyLearn - Client-Side Diagnostic</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .test-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .pass { background: #4CAF50; }
+        .fail { background: #f44336; }
+        .warn { background: #ff9800; }
+        h1 { text-align: center; margin-bottom: 30px; }
+        h2 { margin-top: 0; }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>🔍 PyLearn - Client-Side Diagnostic Tool</h1>
+    
+    <div class="test-card">
+        <h2>Test 1: Browser Compatibility</h2>
+        <div id="browser-test">Running...</div>
+    </div>
+    
+    <div class="test-card">
+        <h2>Test 2: LocalStorage Access</h2>
+        <div id="storage-test">Running...</div>
+        <button class="btn" onclick="testStorage()">Test Storage</button>
+        <button class="btn" onclick="clearStorage()">Clear Storage</button>
+    </div>
+    
+    <div class="test-card">
+        <h2>Test 3: API Connectivity</h2>
+        <div id="api-test">Running...</div>
+        <button class="btn" onclick="testAPI()">Test Execute</button>
+    </div>
+    
+    <div class="test-card">
+        <h2>Test 4: CodeMirror Library</h2>
+        <div id="codemirror-test">Running...</div>
+    </div>
+    
+    <div class="test-card">
+        <h2>Test 5: Progress Tracking Functions</h2>
+        <div id="progress-test">Running...</div>
+        <button class="btn" onclick="testProgress()">Test Progress</button>
+    </div>
+    
+    <div class="test-card">
+        <h2>Stored Data</h2>
+        <pre id="stored-data">Loading...</pre>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    
+    <script>
+    // Test 1: Browser Compatibility
+    function testBrowser() {
+        const tests = {
+            'ES6 Support': typeof Symbol !== 'undefined',
+            'Fetch API': typeof fetch !== 'undefined',
+            'LocalStorage': typeof localStorage !== 'undefined',
+            'JSON Support': typeof JSON !== 'undefined',
+            'Promises': typeof Promise !== 'undefined',
+            'Arrow Functions': true, // If this runs, they work!
+        };
+        
+        let html = '<ul>';
+        let allPass = true;
+        
+        for (const [test, pass] of Object.entries(tests)) {
+            const status = pass ? 'pass' : 'fail';
+            html += `<li>${test}: <span class="status ${status}">${pass ? 'PASS' : 'FAIL'}</span></li>`;
+            if (!pass) allPass = false;
+        }
+        html += '</ul>';
+        
+        document.getElementById('browser-test').innerHTML = html;
+        return allPass;
+    }
+    
+    // Test 2: LocalStorage
+    function testStorage() {
+        try {
+            localStorage.setItem('test_key', 'test_value');
+            const value = localStorage.getItem('test_key');
+            localStorage.removeItem('test_key');
+            
+            if (value === 'test_value') {
+                document.getElementById('storage-test').innerHTML = 
+                    '<span class="status pass">PASS</span> LocalStorage is working correctly';
+                showStoredData();
+                return true;
+            } else {
+                throw new Error('Value mismatch');
+            }
+        } catch (e) {
+            document.getElementById('storage-test').innerHTML = 
+                `<span class="status fail">FAIL</span> Error: ${e.message}`;
+            return false;
+        }
+    }
+    
+    function clearStorage() {
+        if (confirm('Clear all PyLearn progress data?')) {
+            localStorage.removeItem('completedLessons');
+            alert('Storage cleared!');
+            showStoredData();
+        }
+    }
+    
+    function showStoredData() {
+        const data = localStorage.getItem('completedLessons');
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+                document.getElementById('stored-data').textContent = 
+                    JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                document.getElementById('stored-data').textContent = 
+                    'Invalid JSON: ' + data;
+            }
+        } else {
+            document.getElementById('stored-data').textContent = 
+                'No completion data stored yet.';
+        }
+    }
+    
+    // Test 3: API Connectivity
+    async function testAPI() {
+        document.getElementById('api-test').innerHTML = 
+            '<span class="status warn">TESTING...</span> Sending request...';
+        
+        try {
+            const response = await fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: 'print("API Test Success!")' })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('api-test').innerHTML = 
+                    `<span class="status pass">PASS</span> API Response: ${data.output}`;
+            } else {
+                document.getElementById('api-test').innerHTML = 
+                    `<span class="status warn">PARTIAL</span> API responded but code failed: ${data.output}`;
+            }
+        } catch (e) {
+            document.getElementById('api-test').innerHTML = 
+                `<span class="status fail">FAIL</span> Error: ${e.message}`;
+        }
+    }
+    
+    // Test 4: CodeMirror
+    function testCodeMirror() {
+        if (typeof CodeMirror !== 'undefined') {
+            document.getElementById('codemirror-test').innerHTML = 
+                `<span class="status pass">PASS</span> CodeMirror version ${CodeMirror.version || 'unknown'} loaded`;
+            return true;
+        } else {
+            document.getElementById('codemirror-test').innerHTML = 
+                '<span class="status fail">FAIL</span> CodeMirror not loaded';
+            return false;
+        }
+    }
+    
+    // Test 5: Progress Functions
+    function testProgress() {
+        // Test the shared function from lesson pages
+        function getCompletedLessons() {
+            const stored = localStorage.getItem('completedLessons');
+            return stored ? JSON.parse(stored) : {};
+        }
+        
+        function markLessonComplete(pathId, lessonId) {
+            const completed = getCompletedLessons();
+            if (!completed[pathId]) {
+                completed[pathId] = [];
+            }
+            if (!completed[pathId].includes(lessonId)) {
+                completed[pathId].push(lessonId);
+                localStorage.setItem('completedLessons', JSON.stringify(completed));
+                return true;
+            }
+            return false;
+        }
+        
+        // Test marking a lesson complete
+        try {
+            const result = markLessonComplete('test_path', 'test_lesson');
+            const data = getCompletedLessons();
+            
+            if (data['test_path'] && data['test_path'].includes('test_lesson')) {
+                document.getElementById('progress-test').innerHTML = 
+                    '<span class="status pass">PASS</span> Progress tracking functions work correctly';
+                showStoredData();
+                
+                // Cleanup test data
+                delete data['test_path'];
+                localStorage.setItem('completedLessons', JSON.stringify(data));
+                return true;
+            } else {
+                throw new Error('Lesson not marked as complete');
+            }
+        } catch (e) {
+            document.getElementById('progress-test').innerHTML = 
+                `<span class="status fail">FAIL</span> Error: ${e.message}`;
+            return false;
+        }
+    }
+    
+    // Run all tests on load
+    window.addEventListener('DOMContentLoaded', function() {
+        testBrowser();
+        testStorage();
+        testCodeMirror();
+        testProgress();
+        showStoredData();
+    });
+    </script>
+</body>
+</html>

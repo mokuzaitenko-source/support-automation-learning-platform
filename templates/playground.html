@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Playground - Python Learning Platform{% endblock %}
+
+{% block content %}
+<div class="playground-container">
+    <div class="container-fluid">
+        <div class="playground-header">
+            <h1><i class="fas fa-flask"></i> Python Playground</h1>
+            <p>Experiment with Python code in real-time</p>
+        </div>
+
+        <div class="playground-content">
+            <div class="playground-editor">
+                <div class="editor-toolbar">
+                    <span class="toolbar-title"><i class="fas fa-code"></i> Code Editor</span>
+                    <div class="toolbar-buttons">
+                        <button class="btn btn-sm btn-secondary" onclick="clearPlayground()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <button class="btn btn-sm btn-run" onclick="runPlaygroundCode()">
+                            <i class="fas fa-play"></i> Run Code
+                        </button>
+                    </div>
+                </div>
+                <textarea id="playground-editor" class="code-editor"># Welcome to Python Playground!
+# Write your Python code here and click "Run Code"
+
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Print first 10 Fibonacci numbers
+for i in range(10):
+    print(f"F({i}) = {fibonacci(i)}")
+</textarea>
+            </div>
+
+            <div class="playground-output">
+                <div class="output-toolbar">
+                    <span class="toolbar-title"><i class="fas fa-terminal"></i> Output</span>
+                    <button class="btn btn-sm btn-secondary" onclick="clearOutput()">
+                        <i class="fas fa-eraser"></i> Clear Output
+                    </button>
+                </div>
+                <pre id="playground-output" class="output-box">Output will appear here...</pre>
+            </div>
+        </div>
+
+        <div class="playground-tips">
+            <h3><i class="fas fa-lightbulb"></i> Quick Tips</h3>
+            <ul>
+                <li>Use <code>print()</code> to see your output</li>
+                <li>Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to run code</li>
+                <li>All standard Python libraries are available</li>
+                <li>Try creating functions, classes, and experimenting!</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/playground.js') }}"></script>
+{% endblock %}

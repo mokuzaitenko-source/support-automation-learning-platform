@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-modern">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title-modern">Master Python Programming</h1>
+            <p class="hero-subtitle-modern">Your interactive journey from beginner to advanced Python developer</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">12+</span>
+                    <span class="stat-label">Lessons</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4</span>
+                    <span class="stat-label">Learning Paths</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Hands-on</span>
+                </div>
+            </div>
+            
+            <a href="#paths" class="btn-hero">
+                🚀 Start Learning
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Learning Paths Section -->
+<section id="paths" class="container">
+    <div class="learning-intro">
+        <h2 class="section-title-modern">Choose Your Learning Path</h2>
+        <p class="section-description">Structured courses designed to take you from beginner to advanced Python developer</p>
+    </div>
+    
+    <div class="learning-paths-grid">
+        {% for path_id, path in learning_paths.items() %}
+        <div class="path-card" data-path-id="{{ path.id }}">
+            <div class="path-icon">{{ path.icon }}</div>
+            <h3 class="path-title">{{ path.title }}</h3>
+            <p class="path-description">{{ path.description }}</p>
+            
+            <div class="path-info">
+                <span>📚 {{ path.lessons|length }} Lessons</span>
+                <span>⏱️ {{ path.duration }}</span>
+            </div>
+            
+            <a href="{{ url_for('learning_path', path_id=path.id) }}" class="btn-path">Start Learning →</a>
+            
+            <div class="path-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ path.progress.percentage }}%"></div>
+                </div>
+                <span class="progress-text">{{ path.progress.percentage }}% Complete</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+// Show trophy for 100% completed paths
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('[data-path-id]');
+    cards.forEach(card => {
+        const progressEl = card.querySelector('.progress-text');
+        if (progressEl && progressEl.textContent.includes('100%')) {
+            const icon = card.querySelector('.path-icon');
+            if (icon && !icon.textContent.includes('🏆')) {
+                icon.innerHTML += ' 🏆';
+                card.style.borderTop = '4px solid #4CAF50';
+            }
+        }
+    });
+});
+</script>
+
+<!-- Features Section -->
+<section class="container">
+    <div class="features-modern">
+        <div class="learning-intro">
+            <h2 class="section-title-modern">Why Learn Python With Us?</h2>
+            <p class="section-description">Experience the best interactive learning platform for Python</p>
+        </div>
+        
+        <div class="features-grid-modern">
+            <div class="feature-item-modern">
+                <div class="feature-icon-modern">💻</div>
+                <h3>Interactive Coding</h3>
+                <p>Write and run Python code directly in your browser with instant feedback</p>
+            </div>
+            
+            <div class="feature-item-modern">
+                <div class="feature-icon-modern">⚡</div>
+                <h3>Real-time Feedback</h3>
+                <p>See your code results immediately and learn from your mistakes</p>
+            </div>
+            
+            <div class="feature-item-modern">
+                <div class="feature-icon-modern">🎯</div>
+                <h3>Structured Learning</h3>
+                <p>Follow a proven curriculum from basics to advanced concepts</p>
+            </div>
+            
+            <div class="feature-item-modern">
+                <div class="feature-icon-modern">💡</div>
+                <h3>Helpful Hints</h3>
+                <p>Get tips and guidance when you need them most</p>
+            </div>
+            
+            <div class="feature-item-modern">
+                <div class="feature-icon-modern">🚀</div>
+                <h3>Progressive Difficulty</h3>
+                <p>Build your skills step-by-step with increasing challenges</p>
+            </div>
+            
+            <div class="feature-item-modern">
+                <div class="feature-icon-modern">🎨</div>
+                <h3>Beautiful Interface</h3>
+                <p>Learn in a modern, distraction-free environment designed for focus</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="container">
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Start Your Python Journey?</h2>
+            <p>Join thousands of learners mastering Python through hands-on practice</p>
+            <a href="#paths" class="btn-cta">Begin Learning Now →</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

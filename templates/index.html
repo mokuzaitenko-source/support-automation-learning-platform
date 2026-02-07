@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Python Learning Platform{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <h1 class="hero-title">Learn Python Programming</h1>
+        <p class="hero-subtitle">Interactive lessons, hands-on coding, and real-time feedback</p>
+        <a href="#lessons" class="btn btn-primary">Start Learning <i class="fas fa-arrow-right"></i></a>
+    </div>
+</div>
+
+<div class="container" id="lessons">
+    <section class="lessons-section">
+        <h2 class="section-title">Learning Path</h2>
+        <div class="lessons-grid">
+            {% for lesson in lessons %}
+            <div class="lesson-card" data-lesson-id="{{ lesson.id }}">
+                <div class="lesson-header">
+                    <div class="lesson-number">{{ loop.index }}</div>
+                    <h3 class="lesson-title">{{ lesson.title }}</h3>
+                </div>
+                <p class="lesson-description">{{ lesson.description }}</p>
+                <div class="lesson-topics">
+                    <span class="topic-count"><i class="fas fa-book"></i> {{ lesson.topics|length }} Topics</span>
+                </div>
+                <a href="/lesson/{{ lesson.id }}" class="btn btn-secondary">Start Lesson <i class="fas fa-play"></i></a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="features-section">
+        <h2 class="section-title">Why Choose PyLearn?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-code"></i></div>
+                <h3>Interactive Coding</h3>
+                <p>Write and execute Python code directly in your browser</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Structured Learning</h3>
+                <p>Follow a carefully designed curriculum from basics to advanced</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Instant Feedback</h3>
+                <p>Get immediate results and error messages as you learn</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+                <h3>Practice Playground</h3>
+                <p>Experiment freely in an unrestricted coding environment</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

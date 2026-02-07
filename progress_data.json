@@ -1,0 +1,15 @@
+{
+  "control_flow": {
+    "completed": [
+      "if_statements",
+      "for_loops"
+    ],
+    "last_updated": "2026-01-23T12:26:52.354445"
+  },
+  "functions": {
+    "completed": [
+      "functions_basics"
+    ],
+    "last_updated": "2026-01-24T08:49:10.785182"
+  }
+}

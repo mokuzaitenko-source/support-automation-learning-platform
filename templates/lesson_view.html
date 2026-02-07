@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if lesson and path %}
+<!-- Lesson Header -->
+<section class="lesson-header-modern">
+    <div class="container">
+        <a href="{{ url_for('learning_path', path_id=path.id) }}" style="color: rgba(255,255,255,0.8); text-decoration: none;">← Back to {{ path.title }}</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+            <div>
+                <h1 class="lesson-title-main">{{ lesson.title }}</h1>
+                <p class="lesson-desc-main">{{ lesson.description }}</p>
+            </div>
+            <div id="completion-badge" class="completion-badge" {% if is_completed %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                ✅ Completed
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lesson Workspace -->
+<section class="lesson-workspace">
+    <div class="container-fluid">
+        <div class="workspace-grid">
+            <!-- Instructions Panel -->
+            <div class="instructions-panel">
+                <div class="panel-header">
+                    📖 Instructions
+                </div>
+                <div class="panel-content">
+                    <div class="instruction-section">
+                        <h3>Learning Objectives</h3>
+                        <p>{{ lesson.description }}</p>
+                    </div>
+                    
+                    {% if lesson.hints %}
+                    <div class="hints-section">
+                        <h3>💡 Key Points</h3>
+                        <ul class="hints-list">
+                            {% for hint in lesson.hints %}
+                            <li>{{ hint }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="action-tips">
+                        <h3>⌨️ Keyboard Shortcuts</h3>
+                        <div class="tip-item">
+                            <kbd>Ctrl</kbd> + <kbd>Enter</kbd> - Run Code
+                        </div>
+                        <div class="tip-item">
+                            <kbd>Ctrl</kbd> + <kbd>L</kbd> - Clear Output
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-actions">
+                        <button id="mark-complete-btn" class="btn-complete" onclick="markLessonComplete()">Mark as Complete ✓</button>
+                        <button class="btn-secondary" onclick="resetCode()">Reset Code</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Editor Panel -->
+            <div class="editor-panel">
+                <div class="panel-header">
+                    💻 Code Editor
+                    <span id="cursor-position" style="float: right; font-size: 0.9em; opacity: 0.7;">Line 1, Column 1</span>
+                </div>
+                <div class="panel-content">
+                    <textarea id="code-editor" class="code-editor">{{ lesson.code or '' }}</textarea>
+                    
+                    <div class="editor-controls">
+                        <button id="run-code-btn" class="btn-run" onclick="runCode()">
+                            ▶️ Run Code
+                        </button>
+                        <button class="btn-secondary" onclick="clearOutput()">Clear Output</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Output Panel -->
+            <div class="output-panel">
+                <div class="panel-header">
+                    📤 Output
+                </div>
+                <div class="panel-content">
+                    <div id="output-console" class="output-console">
+                        <span style="color: #64B5F6;">Click "Run Code" to execute your Python...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lesson Navigation -->
+<section class="container">
+    <div class="lesson-nav">
+        {% set current_index = path.lessons.index(lesson) %}
+        {% if current_index > 0 %}
+            {% set prev_lesson = path.lessons[current_index - 1] %}
+            <a href="{{ url_for('lesson_view', path_id=path.id, lesson_id=prev_lesson.id) }}" class="btn-nav">← Previous</a>
+        {% endif %}
+        {% if current_index < path.lessons|length - 1 %}
+            {% set next_lesson = path.lessons[current_index + 1] %}
+            <a href="{{ url_for('lesson_view', path_id=path.id, lesson_id=next_lesson.id) }}" class="btn-nav" id="next-lesson-btn">Next →</a>
+        {% else %}
+            <a href="{{ url_for('learning_path', path_id=path.id) }}" class="btn-nav">🎉 Finish Path</a>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+const originalCode = {{ (lesson.code or '')|tojson }};
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+const pathId = '{{ path.id }}';
+const lessonId = '{{ lesson.id }}';
+
+// Initialize CodeMirror if available
+let editor;
+if (typeof CodeMirror !== 'undefined') {
+    const textarea = document.getElementById('code-editor');
+    if (textarea) {
+        editor = CodeMirror.fromTextArea(textarea, {
+            mode: 'python',
+            theme: 'monokai',
+            lineNumbers: true,
+            indentUnit: 4,
+            indentWithTabs: false,
+            lineWrapping: true,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            extraKeys: {
+                "Ctrl-Enter": runCode,
+                "Ctrl-L": clearOutput
+            }
+        });
+        textarea.style.display = 'none';
+        editor.on('cursorActivity', updateCursorPosition);
+        console.log('CodeMirror initialized');
+    }
+}
+
+function updateCursorPosition() {
+    if (editor) {
+        const cursor = editor.getCursor();
+        const el = document.getElementById('cursor-position');
+        if (el) el.textContent = `Line ${cursor.line + 1}, Column ${cursor.ch + 1}`;
+    }
+}
+
+function getCode() {
+    return editor ? editor.getValue() : (document.getElementById('code-editor')?.value || '');
+}
+
+function runCode() {
+    const code = getCode();
+    const output = document.getElementById('output-console');
+    if (!output) return;
+    
+    output.innerHTML = '<span class="output-running">Running code...</span>';
+    
+    const headers = {'Content-Type': 'application/json'};
+    if (csrfToken) headers['X-CSRFToken'] = csrfToken;
+    
+    fetch('/execute', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ code: code })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            output.innerHTML = `<span class="output-success">${escapeHtml(data.output || 'Code executed successfully')}</span>`;
+        } else {
+            output.innerHTML = `<span class="output-error">${escapeHtml(data.output || 'Error')}</span>`;
+        }
+    })
+    .catch(error => {
+        output.innerHTML = `<span class="output-error">Error: ${escapeHtml(error.message)}</span>`;
+    });
+}
+
+function clearOutput() {
+    const output = document.getElementById('output-console');
+    if (output) output.innerHTML = '<span style="color: #64B5F6;">Output cleared...</span>';
+}
+
+function resetCode() {
+    if (editor) {
+        editor.setValue(originalCode);
+    } else {
+        const textarea = document.getElementById('code-editor');
+        if (textarea) textarea.value = originalCode;
+    }
+    clearOutput();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Completion tracking
+window.addEventListener('DOMContentLoaded', function() {
+    if ({{ 'true' if is_completed else 'false' }}) {
+        showCompletedState();
+    }
+});
+
+function markLessonComplete() {
+    fetch('/mark-complete/{{ path.id }}/{{ lesson.id }}', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showCompletedState();
+                const output = document.getElementById('output-console');
+                if (output) {
+                    output.innerHTML = '<div style="text-align: center; padding: 2rem; color: #4CAF50; font-size: 1.2rem;">🎉 Lesson Completed!</div>';
+                }
+            }
+        })
+        .catch(e => console.error('Failed to mark complete:', e));
+}
+
+function showCompletedState() {
+    const badge = document.getElementById('completion-badge');
+    const btn = document.getElementById('mark-complete-btn');
+    if (badge) badge.style.display = 'block';
+    if (btn) {
+        btn.textContent = '✓ Completed';
+        btn.disabled = true;
+        btn.classList.add('completed');
+    }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (!editor && e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+    }
+});
+</script>
+{% else %}
+<div class="container">
+    <div class="alert alert-danger">
+        <h2>Error: Lesson not found</h2>
+        <p>The requested lesson could not be loaded.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
