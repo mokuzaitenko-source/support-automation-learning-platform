@@ -42,6 +42,18 @@ python test_all_features.py
 - All core route and execution checks pass
 - Portfolio-ready codebase with clear structure and docs
 
+## Additional Sources Imported
+
+Files discovered on this machine and preserved in `legacy_sources/`:
+
+- `legacy_sources/UnifiedApp_desktop.py`
+- `legacy_sources/UnifiedApp_Modern_desktop.py`
+- `legacy_sources/Launch_Python_Learning_desktop.bat`
+- `legacy_sources/PyLearn_app.py`
+- `legacy_sources/aca-unified-assistant.py`
+
+These are kept for traceability/reference alongside the current app implementation.
+
 ## Ownership
 
 This repository contains original application work by Alvin Tolbert.
