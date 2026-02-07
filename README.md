@@ -3,7 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0-black?logo=flask)](https://flask.palletsprojects.com/)
 
-Interactive Flask app for learning Python with lesson paths, code execution, and progress tracking.
+I built this interactive Flask app for learning Python with lesson paths, code execution, and progress tracking.
 
 ## What I Built
 
