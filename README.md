@@ -12,6 +12,15 @@ I built this interactive Flask app for learning Python with lesson paths, code e
 - Progress tracking across lessons
 - Route-level app checks with Flask test client
 
+## Quick Reviewer Run
+
+```powershell
+pip install -r requirements.txt
+$env:PYTHONIOENCODING='utf-8'
+python test_all_features.py
+python app.py
+```
+
 ## Demo
 
 ![ACA Banner](assets/banner.png)
@@ -39,8 +48,10 @@ python test_all_features.py
 
 ## Results
 
-- All core route and execution checks pass
-- Portfolio-ready codebase with clear structure and docs
+- 12 lesson routes validated in test coverage
+- Core app routes and code execution endpoint passing
+- Legacy compatibility checks added (`legacy_sources/deep_audit_checks.py`)
+- Portfolio-ready codebase with clear structure, docs, and validation flow
 
 ## Additional Sources Imported
 
