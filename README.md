@@ -1,4 +1,7 @@
-# ACA Learning Platform
+﻿# ACA Learning Platform
+
+![Status](https://img.shields.io/badge/status-stable-2ea44f)
+**Repo Type:** product
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0-black?logo=flask)](https://flask.palletsprojects.com/)
@@ -68,3 +71,4 @@ These are kept for traceability/reference alongside the current app implementati
 ## Ownership
 
 This repository contains original application work by Alvin Tolbert.
+
